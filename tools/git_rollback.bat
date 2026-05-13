@@ -1,24 +1,31 @@
 @echo off
 :: ============================================================
 ::  git_rollback.bat — Ver historial y revertir versiones
+::  Ubicacion: tools\git_rollback.bat
 :: ============================================================
+
+set "SCRIPT_DIR=%~dp0"
+set "PROJECT_DIR=%SCRIPT_DIR:~0,-1%"
+for %%i in ("%PROJECT_DIR%") do set "PROJECT_DIR=%%~dpi"
+set "PROJECT_DIR=%PROJECT_DIR:~0,-1%"
+
+cd /d "%PROJECT_DIR%"
+echo [INFO] Directorio: %PROJECT_DIR%
+
+git status >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [!] No se encontro repositorio Git en: %PROJECT_DIR%
+    pause
+    exit /b
+)
 
 echo.
 echo ========================================
 echo   ML TRADING — HISTORIAL Y ROLLBACK
 echo ========================================
 echo.
-
-if not exist ".git" (
-    echo [!] Esta carpeta no es un repositorio Git.
-    pause
-    exit /b
-)
-
-echo Que quieres hacer?
-echo.
 echo   [1] Ver historial de commits
-echo   [2] Ver versiones ^(tags^)
+echo   [2] Ver versiones (tags)
 echo   [3] Revertir a una version anterior
 echo   [4] Ver diferencias entre versiones
 echo   [5] Salir
@@ -52,25 +59,15 @@ goto :eof
 echo.
 git tag --sort=-v:refname
 echo.
-set /p TARGET="Version a restaurar (ej: v1.2.0) o hash de commit: "
+set /p TARGET="Version a restaurar (ej: v2.0.0): "
 echo.
-echo [!] ATENCION: Esto creara una rama temporal con esa version.
-echo     Tu rama main NO se modifica hasta que confirmes.
-echo.
+echo [!] Esto creara una rama temporal. Main no se modifica.
 set /p CONFIRM="Confirmar? (S/N): "
-if /i not "%CONFIRM%"=="S" (
-    echo Cancelado.
-    pause
-    goto :eof
-)
+if /i not "%CONFIRM%"=="S" ( echo Cancelado. & pause & goto :eof )
 git checkout -b rollback/%TARGET% %TARGET%
 echo.
-echo [OK] Ahora estas en la rama rollback/%TARGET%
-echo     Para volver a main: git checkout main
-echo     Para hacer este rollback permanente en main:
-echo       git checkout main
-echo       git merge rollback/%TARGET%
-echo       git push origin main
+echo [OK] Rama: rollback/%TARGET%
+echo     Para volver: git checkout Main
 echo.
 pause
 goto :eof
@@ -80,7 +77,7 @@ echo.
 git tag --sort=-v:refname
 echo.
 set /p VER1="Version base (ej: v1.0.0): "
-set /p VER2="Version a comparar (ej: v1.1.0 o HEAD): "
+set /p VER2="Version a comparar (ej: v2.0.0 o HEAD): "
 echo.
 git diff %VER1% %VER2% --stat
 echo.
