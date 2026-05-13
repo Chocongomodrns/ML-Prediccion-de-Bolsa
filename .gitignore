@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Modelos entrenados
+models/*.pkl
+
+# Entornos virtuales
+venv/
+.venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# Credenciales
+.env
+
+# Logs
+logs/*.log
+
+# Archivos temporales
+*.zip
+*.rar
+diagnostico.py
