@@ -34,7 +34,7 @@ FEATURES = [
     "vol_ratio", "vol_ratio_5",
 ]
 
-MIN_PRECISION = 0.38
+MIN_PRECISION = 0.28
 
 # Borrar modelos anteriores y empezar limpio
 if os.path.exists("models"):

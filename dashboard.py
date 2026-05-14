@@ -81,6 +81,57 @@ if st.session_state.scan_df is not None:
     ]
     if only_open: filtered = filtered[filtered["mercado"].str.contains("🟢")]
 
+    # ======================
+    # EVITAR SEÑALES FALSAS
+    # ======================
+
+    if len(filtered) > 0:
+
+        # LONG que ya explotó
+        if "buy" in filtered.columns:
+
+            filtered.loc[
+                (
+                    (filtered["buy"] == True)
+                    &
+                    (filtered["cambio_%"] > 1.8)
+                ),
+                "buy"
+            ] = False
+
+
+            filtered.loc[
+                (
+                    (filtered["prob_long"] > 0.75)
+                    &
+                    (filtered["cambio_%"] > 1.8)
+                ),
+                "buy_status"
+            ] = "🟢 HOLD"
+
+
+        # SHORT que ya cayó
+        if "sell" in filtered.columns:
+
+            filtered.loc[
+                (
+                    (filtered["sell"] == True)
+                    &
+                    (filtered["cambio_%"] < -2.0)
+                ),
+                "sell"
+            ] = False
+
+
+            filtered.loc[
+                (
+                    (filtered["prob_short"] > 0.75)
+                    &
+                    (filtered["cambio_%"] < -2.0)
+                ),
+                "sell_status"
+            ] = "🔴 HOLD"
+
     # Métricas
     st.markdown("### 📊 Resumen")
     c1, c2, c3, c4, c5 = st.columns(5)
@@ -100,9 +151,22 @@ if st.session_state.scan_df is not None:
         if "🔴" in str(row.get("mercado", "")): return ["opacity: 0.6"] * len(row)
         return [""] * len(row)
 
-    display_cols = ["ticker", "precio", "precio_tipo", "cambio_%",
-                    "prob_long", "prob_short", "rsi", "regime",
-                    "drawdown_20d", "buy", "sell", "mercado"]
+    display_cols = [
+        "ticker",
+        "precio",
+        "precio_tipo",
+        "cambio_%",
+        "prob_long",
+        "prob_short",
+        "buy",
+        "buy_status",
+        "sell",
+        "sell_status",
+        "rsi",
+        "regime",
+        "drawdown_20d",
+        "mercado"
+    ]
     available_cols = [c for c in display_cols if c in filtered.columns]
 
     st.dataframe(

@@ -19,9 +19,9 @@ def apply_strategy(model, test, features):
     # Con x5 apalancamiento subimos el umbral de prob y filtramos más
     test["buy"] = (
         (test["prob"]     > 0.57)          # más exigente con x5
-        & (test["Close"]  > test["ma50"] * 0.98)  # tendencia alcista
+        & (test["Close"]  > test["ma50"])  # tendencia alcista
         & (test["ma20"]   > test["ma50"])  # golden cross
-        & (test["rsi"]    < 78)            # no sobrecomprado
+        & (test["rsi"]    < 68)            # no sobrecomprado
         & (test["return_1d"] > -0.01)      # sin caída brusca reciente
         & (test["macd_diff"] > 0)          # MACD confirma momentum
     )
