@@ -37,9 +37,6 @@ FEATURES = [
 MIN_PRECISION = 0.28
 
 # Borrar modelos anteriores y empezar limpio
-if os.path.exists("models"):
-    shutil.rmtree("models")
-    print("🗑️  Modelos anteriores eliminados")
 os.makedirs("models", exist_ok=True)
 os.makedirs("logs", exist_ok=True)
 
